@@ -1,0 +1,20 @@
+{
+  "name": "cs-deepseek",
+  "version": "1.0.0",
+  "description": "Chinese and English Translation of Mula, Aṭṭhakathā, Ṭīkā and Añña by Deepseek.",
+  "main": "fetch.js",
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/accelon/cs-deepseek.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/accelon/cs-deepseek/issues"
+  },
+  "homepage": "https://github.com/accelon/cs-deepseek#readme"
+}
