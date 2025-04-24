@@ -1,6 +1,6 @@
 import { fromSim } from "lossless-simplified-chinese";
 import { nodefs,writeChanged ,filesFromPattern, readTextContent, fromObj
-    ,autoChineseBreak} from "ptk/nodebundle.cjs";
+    ,autoChineseBreak,autoEnglishBreak} from "ptk/nodebundle.cjs";
 import { UnifiedStep2,Replaces, UnifiedStep1} from "./unified.js";
 await nodefs;
 const srcfolder='html/'
@@ -42,6 +42,9 @@ const fromsimtext=(t)=>{
         
     return t;
 }
+const replaceParanum=(t,remove=false)=>{
+    return t.replace(/([\-\d]+)\./,remove?"":"$1");
+}
 const gen=(fn)=>{
     const texts={P:[],E:[],C:[],T:[]};
     console.log(fn)
@@ -58,34 +61,38 @@ const gen=(fn)=>{
             linetext=linetext.replace(/<hi [^>]+?class="Pdot">.<\/hi>/g,'')
             linetext=linetext.replace(/<hi [^>]+?class="Pbold">([^<]+)<\/hi>/g,'<粗>$1</粗>')
             n='',title='',chapter='',book='';            
-            linetext=linetext.replace(/<hi [^>]+?class="Pparanum">(\d+)<\/hi>/g,(m,m1)=>{
+            linetext=linetext.replace(/<hi [^>]+?class="Pparanum">([\-\d]+)<\/hi>/g,(m,m1)=>{
                 n=m1;
                 return '<段>'+n+'</段>';
             });
 
-            if (~style.indexOf('Ptitle')) {
+            if (~style.indexOf('Ptitle')||~style.indexOf('Psubhead')) {
                 title=linetext;
-                linetext='<節>'+linetext+'</節>';
+                linetext='<節>'+replaceParanum(linetext)+'</節>';
             }
             if (~style.indexOf('Pchapter')) {
                 chapter=linetext;
-                linetext='<章>'+linetext+'</章>';
+                linetext='<章>'+replaceParanum(linetext)+'</章>';
             }
             if (~style.indexOf('Pbook')) {
                 book=linetext;
-                linetext='<冊>'+linetext+'</冊>';
+                linetext='<冊>'+replaceParanum(linetext)+'</冊>';
             }
-
+            linetext=autoEnglishBreak(linetext);
         } else {
-            if(n) linetext='<段>'+n+'</段>'+linetext.replace(n+'.','')
-            if(title) linetext='<節>'+linetext+'</節>';
-            if(chapter) linetext='<章>'+linetext+'</章>';
-            if(book) linetext='<冊>'+linetext+'</冊>';
+            if(n) linetext='<段>'+n+'</段>'+replaceParanum(linetext,true)
+            if(title) linetext='<節>'+replaceParanum(linetext)+'</節>';
+            if(chapter) linetext='<章>'+replaceParanum(linetext)+'</章>';
+            if(book) linetext='<冊>'+replaceParanum(linetext)+'</冊>';
+            if (lang=='C') {
+                linetext=autoChineseBreak(linetext);
+                texts['T'][para]=fromsimtext(linetext);
+            } else if (lang=='E') {
+                linetext=autoEnglishBreak(linetext)
+            }            
+            linetext=linetext.replace(/▲/g,'\n');
         }
-        if (lang=='C') {
-            linetext=autoChineseBreak(linetext).replace(/▲/g,'\n');
-            texts['T'][para]=fromsimtext(linetext);
-        }
+ 
         texts[lang][para]=linetext;
     })
     writeChanged(outfolder+fn.replace('.html','.xml'),'\ufeff'+texts.P.join('\n'));
@@ -93,7 +100,7 @@ const gen=(fn)=>{
     writeChanged(outfolder+fn.replace('.html','c.xml'),'\ufeff'+texts.C.join('\n'));
     writeChanged(outfolder+fn.replace('.html','t.xml'),'\ufeff'+texts.T.join('\n'));
 }
-//files.length=2;
+//files.length=3;
 const t=performance.now();
 files.forEach(gen);
 writeChanged('pairs.txt',fromObj(trapairs,true).join('\n'));

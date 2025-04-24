@@ -1,0 +1,18 @@
+﻿
+<冊>数据库说明</冊>
+本数据库包括了VRI 收录的巴利三藏、义注、复注以及其他作品。
+未经人工校对！仅供参考。
+
+可执行文件：国内 https://shutonggui.cn/cs-deepseek/  海外 https://nissaya.cn/cs-deepseek/
+csds.adb 罗马化巴利语
+csds.adb deepseek 翻译英语
+csdszh.adb deepseek 翻译现代汉语
+csdszht.adb deepseek 翻译汉语，机转繁体（尚有未正确转换的文字，建议使用简体版）
+数字加工：
+一）去除HTML标记，转换成accelon3 标记。
+二）自动切分太长的行。
+底本：VRI 第六次结集
+数据来源 https://apply.paauksociety.org/tipitaka/  源代码 https://github.com/accelon/cs-deepseek/
+微信：Sukhanika （加好友请注明 巴利三藏）
+Email:  yapcheahshen@gmail.com
+2025.4.24 善那 以 Creative Common Zero 释出。
