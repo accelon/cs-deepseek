@@ -8,8 +8,8 @@ const outfolder='acc3/';
 const files=filesFromPattern('*.html',srcfolder);
 const trapairs={};
 
-const tidytext=t=>{
-    t=fromSim(t.replace(/▲$/,''),3,'{}');
+const fromsimtext=(t)=>{
+    t=fromSim(t,3,'{}');
 
     t=t.replace(/\{(.{2,4})\}/g,(m,m1)=>{
         const repl=UnifiedStep1[m1]||'{'+m1+'}';
@@ -43,13 +43,14 @@ const tidytext=t=>{
     return t;
 }
 const gen=(fn)=>{
-    const texts={P:[],E:[],C:[]};
+    const texts={P:[],E:[],C:[],T:[]};
     console.log(fn)
     const content=readTextContent(srcfolder+fn).replace(/\n/g,'▲');
 
     let chapter='',title='',n='',book='';
     content.replace(/<p id="id([PCE])_(\d+)([^>]+?)>(.+?)<\/p>/g,(m,lang,para,style,linetext)=>{
-        linetext=tidytext(linetext)
+        linetext=linetext.replace(/▲$/,'');
+        
         // if (~style.indexOf(lang+'centre')) linetext='';
         if (lang=='P') {
             linetext=linetext.replace(/<note>([^<]+)<\/note>/g,'');//drop note 
@@ -83,12 +84,14 @@ const gen=(fn)=>{
         }
         if (lang=='C') {
             linetext=autoChineseBreak(linetext).replace(/▲/g,'\n');
+            texts['T'][para]=fromsimtext(linetext);
         }
         texts[lang][para]=linetext;
     })
     writeChanged(outfolder+fn.replace('.html','.xml'),'\ufeff'+texts.P.join('\n'));
     writeChanged(outfolder+fn.replace('.html','e.xml'),'\ufeff'+texts.E.join('\n'));
     writeChanged(outfolder+fn.replace('.html','c.xml'),'\ufeff'+texts.C.join('\n'));
+    writeChanged(outfolder+fn.replace('.html','t.xml'),'\ufeff'+texts.T.join('\n'));
 }
 //files.length=2;
 const t=performance.now();
