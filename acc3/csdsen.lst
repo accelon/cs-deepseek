@@ -1,9 +1,13 @@
-csdsen.xml
+﻿csdsen.xml
+<藏>Root Text</藏>
+version.xml
+<部>Monastic Discipline</部>
 1101e.xml
 1102e.xml
 1103e.xml
 1104e.xml
 1105e.xml
+<部>Discourses</部>
 2101e.xml
 2102e.xml
 2103e.xml
@@ -26,6 +30,7 @@ csdsen.xml
 5109e.xml
 5110e.xml
 5111e.xml
+<部>Minor</部>
 6101e.xml
 6102e.xml
 6103e.xml
@@ -47,6 +52,7 @@ csdsen.xml
 6119e.xml
 6120e.xml
 6121e.xml
+<部>Systematic Thesis</部>
 7101e.xml
 7102e.xml
 7103e.xml
@@ -59,12 +65,15 @@ csdsen.xml
 7110e.xml
 7111e.xml
 7112e.xml
+<藏>Commentaries</藏>
+<部>Monastic Discipline</部>
 1201e.xml
 1202e.xml
 1203e.xml
 1204e.xml
 1205e.xml
 1206e.xml
+<部>Discourses</部>
 2201e.xml
 2202e.xml
 2203e.xml
@@ -83,6 +92,7 @@ csdsen.xml
 5202e.xml
 5203e.xml
 5204e.xml
+<部>Minor</部>
 6201e.xml
 6202e.xml
 6203e.xml
@@ -111,12 +121,16 @@ csdsen.xml
 6226e.xml
 6227e.xml
 6228e.xml
+<部>Systematic Thesis</部>
 7201e.xml
 7202e.xml
 7203e.xml
+<藏>Sub Commentaries</藏>
+<部>Monastic Discipline</部>
 1301e.xml
 1302e.xml
 1303e.xml
+<部>Discourses</部>
 2301e.xml
 2302e.xml
 2303e.xml
@@ -131,13 +145,17 @@ csdsen.xml
 5302e.xml
 5303e.xml
 5304e.xml
+<部>Minor</部>
 6301e.xml
 6302e.xml
+<部>Systematic Thesis</部>
 7301e.xml
 7302e.xml
 7303e.xml
 7304e.xml
 7305e.xml
+<藏>Others</藏>
+<部>Monastic Discipline</部>
 1401e.xml
 1402e.xml
 1403e.xml
@@ -150,11 +168,13 @@ csdsen.xml
 1410e.xml
 1411e.xml
 1412e.xml
+<部>Path of Purification</部>
 84101e.xml
 84102e.xml
 84103e.xml
 84104e.xml
 84105e.xml
+<部>Three Baskets</部>
 84201e.xml
 84202e.xml
 84203e.xml
@@ -162,6 +182,7 @@ csdsen.xml
 84205e.xml
 84206e.xml
 84207e.xml
+<部>Other works</部>
 84301e.xml
 84302e.xml
 84303e.xml
