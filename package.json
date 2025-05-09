@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Chinese and English Translation of Mula, Aṭṭhakathā, Ṭīkā and Añña by Deepseek.",
   "main": "fetch.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
+    "build": "bun run bundle.ts",
+    "start":"bun run build && build-redbean.cmd",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/accelon/cs-deepseek/issues"
   },
-  "homepage": "https://github.com/accelon/cs-deepseek#readme"
+  "homepage": "https://github.com/accelon/cs-deepseek#readme",
+  "dependencies": {
+    "bun-plugin-svelte": "^0.0.6"
+  }
 }

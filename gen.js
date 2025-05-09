@@ -1,106 +1,120 @@
-import { fromSim } from "lossless-simplified-chinese";
 import { nodefs,writeChanged ,filesFromPattern, readTextContent, fromObj
-    ,autoChineseBreak,autoEnglishBreak} from "ptk/nodebundle.cjs";
-import { UnifiedStep2,Replaces, UnifiedStep1} from "./unified.js";
+    ,autoChineseBreak,autoEnglishBreak,toParagraphs} from "ptk/nodebundle.cjs";
 await nodefs;
 const srcfolder='html/'
-const outfolder='acc3/';
+const outfolderP='csds.offtext/';
+const outfolderE='csds_en.offtext/';
+const outfolderC='csds_zh.offtext/';
 const files=filesFromPattern('*.html',srcfolder);
 const trapairs={};
+// import {BKID} from './src/bkid.ts'
 
-const fromsimtext=(t)=>{
-    t=fromSim(t,3,'{}');
 
-    t=t.replace(/\{(.{2,4})\}/g,(m,m1)=>{
-        const repl=UnifiedStep1[m1]||'{'+m1+'}';
-        return repl;
-    })
+const alignbyp=(texts,fn)=>{
+    const P=[],E=[],C=[];
+    for (let i in texts.P) {
+        if (!texts.E[i]) texts.E[i]=texts.P[i]
+        if (!texts.C[i]) texts.C[i]=texts.P[i]
 
-    t=t.replace(/(.\{.{2,4}\})/g,(m,m1)=>{
-        const repl=Replaces[m1]||m1;
-        if (repl!==m1) {
-            if (!trapairs[m1]) trapairs[m1]=0;
-            trapairs[m1]++;       
-        }
-        return repl;
-    })
-
-    t=t.replace(/(\{.{2,4}\}.)/g,(m,m1)=>{
-        const repl=Replaces[m1]||m1;
-        if (repl!==m1) {
-            if (!trapairs[m1]) trapairs[m1]=0;
-            trapairs[m1]++;       
-        }
-        return repl;
-    })
-
-    t=t.replace(/\{(.{2,4})\}/g,(m,m1)=>{
-        const repl=UnifiedStep2[m1]||'{'+m1+'}';
-        return repl;
-    })
-
+        const Pi=((parseInt(i)?'^p'+i+' ':'')+texts.P[i].trim()).split('\n')
+        const Ci=((parseInt(i)?'^p'+i+' ':'')+texts.C[i].trim()).split('\n')
+        const Ei=((parseInt(i)?'^p'+i+' ':'')+texts.E[i].trim()).split('\n')
         
-    return t;
+        let max=Pi.length;
+        if (Ei.length>max) max=Ei.length;
+        if (Ci.length>max) max=Ci.length;
+    
+        while (Pi.length<max) Pi.push('');
+        while (Ei.length<max) Ei.push('');
+        while (Ci.length<max) Ci.push('');
+        
+        P[i]=Pi.join('\n');
+        E[i]=Ei.join('\n');
+        C[i]=Ci.join('\n');
+    }
+
+    return {P,E,C};
 }
 const replaceParanum=(t,remove=false)=>{
     return t.replace(/([\-\d]+)\./,remove?"":"$1");
 }
 const gen=(fn)=>{
     const texts={P:[],E:[],C:[],T:[]};
-    console.log(fn)
+    process.stdout.write('\r'+fn+'          ');
     const content=readTextContent(srcfolder+fn).replace(/\n/g,'▲');
-
-    let chapter='',title='',n='',book='';
+// para , cs-deepseek 自己給的序號
+// n   , vri 的段號
+    let chapter='',title='',n='',book='',save_n_for_nextpara='';
     content.replace(/<p id="id([PCE])_(\d+)([^>]+?)>(.+?)<\/p>/g,(m,lang,para,style,linetext)=>{
         linetext=linetext.replace(/▲$/,'');
-        
-        // if (~style.indexOf(lang+'centre')) linetext='';
         if (lang=='P') {
             linetext=linetext.replace(/<note>([^<]+)<\/note>/g,'');//drop note 
             linetext=linetext.replace(/<pb[^>]+?\/> ?/g,'')
             linetext=linetext.replace(/<hi [^>]+?class="Pdot">.<\/hi>/g,'')
-            linetext=linetext.replace(/<hi [^>]+?class="Pbold">([^<]+)<\/hi>/g,'<粗>$1</粗>')
-            n='',title='',chapter='',book='';            
-            linetext=linetext.replace(/<hi [^>]+?class="Pparanum">([\-\d]+)<\/hi>/g,(m,m1)=>{
-                n=m1;
-                return '<段>'+n+'</段>';
-            });
-
+            linetext=linetext.replace(/<hi [^>]+?class="Pbold">([^<]+)<\/hi>/g,'^b[$1]')
+            title='',chapter='',book=''; 
+            if (save_n_for_nextpara) {
+                //console.log('save',save_n_for_nextpara, 'for',para)
+                n=save_n_for_nextpara; 
+                save_n_for_nextpara=''
+                linetext='^pn'+n+' '+linetext;
+            } else {
+                linetext=linetext.replace(/<hi [^>]+?class="Pparanum">([\-\d]+)<\/hi>/g,(m,m1)=>{
+                    n=m1;
+                    // if (n=="1") console.log("n reset",fn,"para",para)
+                    return '^pn'+m1;
+                });    
+            }
             if (~style.indexOf('Ptitle')||~style.indexOf('Psubhead')) {
                 title=linetext;
-                linetext='<節>'+replaceParanum(linetext)+'</節>';
+                linetext='#title '+replaceParanum(linetext);
             }
             if (~style.indexOf('Pchapter')) {
                 chapter=linetext;
-                linetext='<章>'+replaceParanum(linetext)+'</章>';
+                linetext='#chapter '+replaceParanum(linetext);
             }
             if (~style.indexOf('Pbook')) {
                 book=linetext;
-                linetext='<冊>'+replaceParanum(linetext)+'</冊>';
+                linetext='#book '+replaceParanum(linetext);
             }
             linetext=autoEnglishBreak(linetext);
         } else {
-            if(n) linetext='<段>'+n+'</段>'+replaceParanum(linetext,true)
-            if(title) linetext='<節>'+replaceParanum(linetext)+'</節>';
-            if(chapter) linetext='<章>'+replaceParanum(linetext)+'</章>';
-            if(book) linetext='<冊>'+replaceParanum(linetext)+'</冊>';
+            if(n) linetext='^pn'+n+' '+replaceParanum(linetext,true)
+            if(title) linetext='#title '+replaceParanum(linetext);
+            if(chapter) linetext='#chapter '+replaceParanum(linetext);
+            if(book) {
+                linetext='#book '+replaceParanum(linetext);
+            }
             if (lang=='C') {
                 linetext=autoChineseBreak(linetext);
-                texts['T'][para]=fromsimtext(linetext);
+                texts['T'][para]=linetext;
             } else if (lang=='E') {
                 linetext=autoEnglishBreak(linetext)
             }            
             linetext=linetext.replace(/▲/g,'\n');
         }
- 
-        texts[lang][para]=linetext;
+        if (lang=='P' && linetext.match(/^\^pn\d+$/)) { // 1103  p134,  只有段號，必須存起來。
+            // console.log('empty para',linetext);
+            linetext='';
+            save_n_for_nextpara=n;
+        }
+        if (lang=='E') n='';//english at the end, reset n
+        if (texts[lang][para]) texts[lang][para]+='\n'
+        texts[lang][para]=(texts[lang][para]||'')+linetext.replace(/\n+/g,'\n');
     })
-    writeChanged(outfolder+fn.replace('.html','.xml'),'\ufeff'+texts.P.join('\n'));
-    writeChanged(outfolder+fn.replace('.html','e.xml'),'\ufeff'+texts.E.join('\n'));
-    writeChanged(outfolder+fn.replace('.html','c.xml'),'\ufeff'+texts.C.join('\n'));
-    writeChanged(outfolder+fn.replace('.html','t.xml'),'\ufeff'+texts.T.join('\n'));
+    //address by ak
+    texts.P[0]='^ak'+fn.replace('.html','');
+    texts.E[0]='^ak'+fn.replace('.html','e');
+    texts.C[0]='^ak'+fn.replace('.html','c');
+
+    const {P,E,C} = alignbyp(texts,fn);
+
+    writeChanged(outfolderP+fn.replace('.html','.off'),'\ufeff'+P.join('\n'));
+    writeChanged(outfolderE+fn.replace('.html','e.off'),'\ufeff'+E.join('\n'));
+    writeChanged(outfolderC+fn.replace('.html','c.off'),'\ufeff'+C.join('\n'));
 }
-//files.length=3;
+// files.length=151; //exclude 8xxxx.html
+// files.length=10
 const t=performance.now();
 files.forEach(gen);
 writeChanged('pairs.txt',fromObj(trapairs,true).join('\n'));

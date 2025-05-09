@@ -13,7 +13,13 @@ Chinese and English Translation of Mula, Aṭṭhakathā, Ṭīkā and Añña by
 
     node gen
     
-    
+## deploy multiplatform
+   require https://github.com/accelon/acc3x86/
+
+   build-redbean.cmd
+
 ## todo
         
     繁體正規化
+
+

@@ -397,3 +397,38 @@ export const Replaces={
 
 }
     
+
+const fromsimtext=(t)=>{
+    t=fromSim(t,3,'{}');
+
+    t=t.replace(/\{(.{2,4})\}/g,(m,m1)=>{
+        const repl=UnifiedStep1[m1]||'{'+m1+'}';
+        return repl;
+    })
+
+    t=t.replace(/(.\{.{2,4}\})/g,(m,m1)=>{
+        const repl=Replaces[m1]||m1;
+        if (repl!==m1) {
+            if (!trapairs[m1]) trapairs[m1]=0;
+            trapairs[m1]++;       
+        }
+        return repl;
+    })
+
+    t=t.replace(/(\{.{2,4}\}.)/g,(m,m1)=>{
+        const repl=Replaces[m1]||m1;
+        if (repl!==m1) {
+            if (!trapairs[m1]) trapairs[m1]=0;
+            trapairs[m1]++;       
+        }
+        return repl;
+    })
+
+    t=t.replace(/\{(.{2,4})\}/g,(m,m1)=>{
+        const repl=UnifiedStep2[m1]||'{'+m1+'}';
+        return repl;
+    })
+
+        
+    return t;
+}
