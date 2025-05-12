@@ -1,3 +1,4 @@
+@rem copy latest version
 copy ..\acc3x64\dist\acc3.com dist\cs-deepseek.com
 cd dist
 @rem do not include sw.js 

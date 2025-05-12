@@ -11,6 +11,10 @@ Chinese and English Translation of Mula, Aṭṭhakathā, Ṭīkā and Añña by
 
 ## generate accelon3 format
 
+    node gen-acc3
+
+## generate offtext format
+
     node gen
     
 ## deploy multiplatform

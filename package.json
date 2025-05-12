@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run bundle.ts",
-    "start":"bun run build && build-redbean.cmd",
+    "start": "bun run build && build-redbean.cmd",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/accelon/cs-deepseek#readme",
   "dependencies": {
-    "bun-plugin-svelte": "^0.0.6"
+    "bun-plugin-svelte": "^0.0.6",
+    "svelte": "^5.28.2"
   }
 }

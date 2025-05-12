@@ -104,8 +104,8 @@ const gen=(fn)=>{
     })
     //address by ak
     texts.P[0]='^ak'+fn.replace('.html','');
-    texts.E[0]='^ak'+fn.replace('.html','e');
-    texts.C[0]='^ak'+fn.replace('.html','c');
+    texts.E[0]='^ak'+fn.replace('.html','');
+    texts.C[0]='^ak'+fn.replace('.html','');
 
     const {P,E,C} = alignbyp(texts,fn);
 
